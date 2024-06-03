@@ -1,0 +1,101 @@
+---
+title: "Phoebe_Frankie_whales"
+author: "Phoebe Hird"
+date: "2024-05-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assessment 1: Plot Deconstruction
+R markdown for whale Plot deconstruction. The plot came from a published paper in Population Ecology journal. https://esj-journals.onlinelibrary.wiley.com/doi/full/10.1002/1438-390X.1014
+
+Plot caption: Whale sighting data comparison between Norm's Seat and Frenchman's lookout in 2010 over 120 hours of observation.
+
+Issues with the original plot:
+1. colour scheme is poor
+2. used a bar plot for continous (time) data 
+3. other presentation issues (grid lines)
+
+The plan is to recreate the plot as a scatter point plot with geom_smooth lines, and correct the colour scheme. 
+
+We used a Plot digitiser online tool to extract data from the image. 
+
+We then imported the extracted data as a .csv file to rebuild the plot.
+------------------------------------------------------------------------_
+
+# Load tidyverse package
+
+```{r}
+library(tidyverse)
+getwd()
+```
+# Start plot deco, load in the data
+```{r}
+data <- read_csv("../Phoebe_Frankie_whales/whale_data_edit.csv")
+```
+# Build the plot
+
+```{r}
+plot_deco_whales <- ggplot(data = whale_data_edit, mapping = aes(x = Date, y = no..whales.passing)) + 
+  scale_fill_manual(values=c("#CC99FF","#FFCC99"))+
+  geom_point(color="white",shape=21,size=2,aes(fill=factor(Location))) + 
+  guides(fill = "none")+
+  geom_smooth(aes(x=as.numeric(factor(Date)), color=Location), se =FALSE) +
+  scale_color_manual(labels=c("Frenchman's","Norm's Seat"),values=c("#9966FF","#FF9966"))+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle=90, hjust=1))+labs(
+    x = "Date",
+    y = "Whales passing (count)")+
+  labs(title = "Humpback whales passing per day at Norm's Seat and Frenchman's locations",caption = "Data from https://esj-journals.onlinelibrary.wiley.com/doi/full/10.1002/1438-390X.1014"
+)
+plot_deco_whales
+```
+# Save the plot using ggsave
+
+```{r}
+ggsave(plot_deco_whales, filename = "Plot_deco_whales.jpg", width=300,height=200, units="mm")
+
+```
+## Assignment 2 work: End-to-end data anlysis and vis
+
+Exported turtle data from QFISH and tidied it in Excel. We decided to focus on three locations to minimise too much data in the plot and making it unreadable. 
+We then uploading into R using the readr package to load in the .csv file. 
+
+# Load in the data
+
+```{r}
+library(readr)
+data <- read_csv("TurtlesFINAL.csv")
+library(tidyverse)
+```
+# Build the plot 
+
+```{r}
+turtle_plot <- ggplot(data = TurtlesFINAL, mapping = aes(x = Year, y = Turtles)) + 
+  geom_point(color="white",shape=21,size=3,aes(fill=factor(Location))) +
+  scale_fill_manual(values=c("#FFCCFF","#99CCFF","#99FFCC"))+
+  guides(fill = "none")+
+  geom_smooth(aes(color=Location)) +
+  scale_color_manual(values=c("#FF0099","#0066FF","#009966"))+
+  theme_classic()+
+  labs(
+    x = "Year",
+    y = "Turtles (count)",)+
+  labs(title = "Turtles caught by Shark Control Program (SCP) over time by location",subtitle="Turtles are a non-target species of the SCP",caption = "Data from QFISH"
+)
+turtle_plot
+```
+# Save the plot using ggsave
+```{r}
+ggsave(turtle_plot, filename = "Turtle_catch.jpg", width=300,height=200, units="mm")
+```
+To plot the data we used ggplot to create a plot with points and geom_smooth lines. We coloured these lines and points by Location manually and changed the theme of the plot. We then added a title, subtitle and caption for the plot. 
+
+We then saved the plot to the correct dimensions using ggsave function. 
+
+The plot shows the number of turtles caught by the Shark Control Program in three locations (Gold Coast, Townsville and North Stradbroke Island) over time from 2000 t0 2024. The three locations differ in the turtle catch and differ over time. 
+
+In future plots, perhaps the turtle population in each location could also be plotted on the same graph as this may contribute to the number of turtle being caught in the program. 
